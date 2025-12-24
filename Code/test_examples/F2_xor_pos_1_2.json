@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "family": "F2",
+    "name": "F2_xor_pos_1_2",
+    "description": "XOR of positions [1, 2] from end = 0",
+    "formal_definition": "L = { w : XOR(w[-1], w[-2]) = 0 }",
+    "alphabet": ["a", "b"],
+    "nfa_states": 4,
+    "dfa_states": 2019
+  },
+  "Positive sample": [
+    "",
+    "a",
+    "aa",
+    "bb",
+    "aaa",
+    "abb",
+    "baa",
+    "bbb",
+    "baaa",
+    "babb",
+    "baaaa",
+    "baabb",
+    "babaa",
+    "babbb",
+    "bbaa",
+    "bbbb",
+    "bbaaa",
+    "bbabb",
+    "bbbaa",
+    "bbbbb"
+  ],
+  "Negative sample": [
+    "b",
+    "ab",
+    "ba",
+    "aab",
+    "aba",
+    "bab",
+    "bba",
+    "baab",
+    "baba",
+    "baaab",
+    "baaba",
+    "babab",
+    "babba",
+    "bbab",
+    "bbba",
+    "bbaab",
+    "bbaba",
+    "bbbab",
+    "bbbba"
+  ]
+}
+
+
+
+
+

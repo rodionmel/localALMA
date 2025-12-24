@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "alphabet": [
+      "a",
+      "b"
+    ]
+  },
+  "Positive sample": [
+    "aa",
+    "ab",
+    "baa",
+    "bab"
+  ],
+  "Negative sample": [
+    "a",
+    "aba",
+    "abb",
+    "b"
+  ]
+}

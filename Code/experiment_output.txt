@@ -1,0 +1,47 @@
+DFA to Passive Learning Experiment
+==================================
+
+Hypothesis: Queries collected from CharacteristicSetGeneratingOracle
+           are sufficient to learn equivalent M2MA with PassiveLearningOracle
+
+PHASE 1: Learning with CharacteristicSetGeneratingOracle
+==========================================================
+
+Loading DFA from: test_examples/F1_last_2_is_a_ab_dfa.dot
+CharacteristicSetGeneratingOracle: Loaded DFA from test_examples/F1_last_2_is_a_ab_dfa.dot
+  States: 4 (accepting: 2)
+  Alphabet: [a, b]
+  Start state: 2
+
+EQ settings: maxTestLen=25, numTests=1000
+
+Starting learning process...
+----------------------------
+
+
+Phase 1 Results:
+  Learned dimension: 3
+Ran in 0.12s.
+
+
+CharacteristicSetGeneratingOracle Query Statistics:
+  Total queries: 813
+  Unique queries: 813
+  Positive answers: 411
+  Negative answers: 402
+
+CharacteristicSetGeneratingOracle: Output 411 positive and 402 negative queries to test_examples/F1_last_2_is_a_ab_dfa_queries.json
+
+
+PHASE 2: Learning with PassiveLearningOracle
+================================================
+
+Loading queries as examples from: test_examples/F1_last_2_is_a_ab_dfa_queries.json
+PassiveLearningOracle: Loaded 411 positive and 402 negative examples
+Alphabet: [a, b]
+Positive examples: 411
+Negative examples: 402
+
+Starting learning process...
+----------------------------
+

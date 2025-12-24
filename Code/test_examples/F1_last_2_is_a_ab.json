@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "family": "F1",
+    "name": "F1_last_2_is_a_ab",
+    "description": "2-th from last is 'a'",
+    "formal_definition": "L = { w ∈ Σ* : |w| ≥ 2 ∧ w[|w|-2] = 'a' }",
+    "alphabet": ["a", "b"],
+    "nfa_states": 3,
+    "dfa_states": 1821
+  },
+  "Positive sample": [
+    "aa",
+    "ab",
+    "aaa",
+    "aab",
+    "aaaa",
+    "aaab",
+    "abaa",
+    "abab",
+    "aaaaa",
+    "aaaab",
+    "aabaa",
+    "aabab",
+    "baa",
+    "bab",
+    "abaaa",
+    "abaab",
+    "abbaa",
+    "abbab"
+  ],
+  "Negative sample": [
+    "a",
+    "aba",
+    "abb",
+    "aaba",
+    "aabb",
+    "abba",
+    "abbb",
+    "aaaba",
+    "aaabb",
+    "aabba",
+    "aabbb",
+    "",
+    "b",
+    "ba",
+    "bb",
+    "bba",
+    "bbb",
+    "ababa",
+    "ababb",
+    "abbba",
+    "abbbb"
+  ]
+}
+
+
+
+
+

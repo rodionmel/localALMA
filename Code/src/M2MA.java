@@ -794,8 +794,16 @@ public class M2MA {
 		
 		int out = 0;
 		
+		// Check for PassiveLearningOracle first
+		if (PassiveLearningOracle.active) {
+			out = PassiveLearningOracle.MQ(word);
+		}
+		// Check for CharacteristicSetGeneratingOracle
+		else if (CharacteristicSetGeneratingOracle.active) {
+			out = CharacteristicSetGeneratingOracle.MQ(word);
+		}
 		// NBA.java and arbitrary.java use their own MQ functions
-		if(NBA.NBAFinalStates != null) {
+		else if(NBA.NBAFinalStates != null) {
 			out = NBA.MQ(word);
 		} else if(arbitrary.MQMethod != null) {
 			try {
@@ -840,6 +848,14 @@ public class M2MA {
 	}
 	
 	public static boolean EQ(HashMap<Integer, ArrayList<Integer>> hypothesisFinalVector, HashMap<Integer, ArrayList<Integer>>[] hypothesisTransitionMatrices) throws Exception {
+		// Check for PassiveLearningOracle
+		if (PassiveLearningOracle.active) {
+			return PassiveLearningOracle.EQ(hypothesisFinalVector, hypothesisTransitionMatrices);
+		}
+		// Check for CharacteristicSetGeneratingOracle
+		if (CharacteristicSetGeneratingOracle.active) {
+			return CharacteristicSetGeneratingOracle.EQ(hypothesisFinalVector, hypothesisTransitionMatrices);
+		}
 		// NBA.java and arbitrary.java use statistical EQ's
 		if (NBA.NBAFinalStates != null || arbitrary.MQMethod != null) {
 			return arbitrary.EQstatistical(hypothesisFinalVector, hypothesisTransitionMatrices);
