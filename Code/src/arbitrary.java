@@ -7,6 +7,7 @@
  */
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,28 +24,61 @@ public class arbitrary {
 	public static int EQNumPerformed;
 
 	public static void main(String[] args) throws Exception {
-		System.out.println("Program Description:");
-		System.out.println("The program displays to stdout the M2MA learned using a membership query function"
-				+ " specified in MQ.java and statistical equivalence queries.");
-		System.out.println("The program can be used to approximately learn any"
-				+ " type of automata, provided that MQ.java contains the desired automata's membership query function.");
-		System.out.println("\n----------------------------\n");
-		
-		readInput();
+		if (args.length == 1) {
+			readInputFromString(args[0]);
+		}
+		else {
+			System.out.println("Program Description:");
+			System.out.println("The program displays to stdout the M2MA learned using a membership query function"
+					+ " specified in MQ.java and statistical equivalence queries.");
+			System.out.println("The program can be used to approximately learn any"
+					+ " type of automata, provided that MQ.java contains the desired automata's membership query function.");
+			System.out.println("\n----------------------------\n");
+			
+			readInput();
+		}
 		
 		M2MA.learn();
 		
 		M2MA.displayResults();
 		
 		M2MA.displayRuntime();
-		
-		M2MA.operationsOnLearnedMA();
+
+		if (args.length != 1) {
+			M2MA.operationsOnLearnedMA();
+		}
 	}
 	
 	public static void readInput() throws Exception {
 		System.out.println("Input file name and optional flag -v (e.g. arb_input1.txt or arb_input1.txt -v)");
 
 		BufferedReader f = M2MA.getFile(true, false, false, false);
+		
+		// membership query function to call in MQ.java
+		try {
+			MQMethod = (new MQ()).getClass().getMethod(M2MA.readFile(f), String.class);
+		} catch (Exception e) {
+			M2MA.throwException(f, "Invalid input: invalid membership query function name.");
+		}
+		
+		EQMaxTestLen = Integer.parseInt(M2MA.readFile(f));
+		EQNumTests = Integer.parseInt(M2MA.readFile(f));
+		EQLimit = Integer.parseInt(M2MA.readFile(f));
+		EQNumPerformed = 0;
+		M2MA.readAlphabet(f, false);
+				
+		f.close();
+	}
+	
+	public static void readInputFromString(String filename) throws Exception {
+//		System.out.println("Input file name and optional flag -v (e.g. arb_input1.txt or arb_input1.txt -v)");
+
+//		BufferedReader f = M2MA.getFile(true, false, false, false);
+		System.out.println("Input file name is " + filename + "\n");
+		
+		M2MA.startTime = System.nanoTime();
+		
+		BufferedReader f = new BufferedReader(new FileReader(filename));
 		
 		// membership query function to call in MQ.java
 		try {

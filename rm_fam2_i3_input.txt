@@ -1,0 +1,10 @@
+// name of the desired membership query function in MQ.java
+MQ_F2_i3
+// max equivalence query test length
+15
+// number of tests
+5000000
+// limit on the number of equivalence queries to run
+100000
+// alphabeth
+______ _____q ____p_ ____pq ___q__ ___q_q ___qp_ ___qpq __p___ __p__q __p_p_ __p_pq __pq__ __pq_q __pqp_ __pqpq _q____ _q___q _q__p_ _q__pq _q_q__ _q_q_q _q_qp_ _q_qpq _qp___ _qp__q _qp_p_ _qp_pq _qpq__ _qpq_q _qpqp_ _qpqpq p_____ p____q p___p_ p___pq p__q__ p__q_q p__qp_ p__qpq p_p___ p_p__q p_p_p_ p_p_pq p_pq__ p_pq_q p_pqp_ p_pqpq pq____ pq___q pq__p_ pq__pq pq_q__ pq_q_q pq_qp_ pq_qpq pqp___ pqp__q pqp_p_ pqp_pq pqpq__ pqpq_q pqpqp_ pqpqpq $

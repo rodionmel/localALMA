@@ -1,0 +1,10 @@
+// name of the desired membership query function in MQ.java
+MQ4
+// max equivalence query test length
+25
+// number of tests
+1000000
+// limit on the number of equivalence queries to run
+50000
+// alphabet
+____ ___q __p_ __pq _q__ _q_q _qp_ _qpq p___ p__q p_p_ p_pq pq__ pq_q pqp_ pqpq $

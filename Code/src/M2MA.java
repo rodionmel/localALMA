@@ -13,7 +13,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Arrays;
+import java.util.Iterator;
+
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -21,6 +25,8 @@ import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
+
+
 
 public class M2MA {
 	
@@ -92,35 +98,154 @@ public class M2MA {
 	
 	// true if running minimize.java
 	public static boolean inMinimize = false;
-	
+
+	// for batch MQ running
+	public static String[] stringBatch;
+
 	public static void main(String[] args) throws Exception {
-		System.out.println("Program Description:");
-		System.out.println("The program takes in as input an M2MA and prints to stdout the M2MA "
-				+ "obtained after minimizing the input function and learning it using membership and equivalence queries.");
-		System.out.println("\n----------------------------\n");
+		if (args.length == 0 || !args[0].equals("mq_time")) {
+
+			System.out.println("Program Description:");
+			System.out.println("The program takes in as input an M2MA and prints to stdout the M2MA "
+					+ "obtained after minimizing the input function and learning it using membership and equivalence queries.");
+			System.out.println("\n----------------------------\n");
+
+			readInput();
+
+			minimize();
+
+			learn();
+
+			if (minSize != learnedSize) {
+				throwException(null, "Algorithm failed: the learned mod-2-MA has a different dimension " + "("
+						+ learnedSize + ") than the minimized mod-2-MA (" + minSize + ").");
+			}
+
+			if (finalCheck(25, 1000, false)) {
+				displayResults();
+			} else {
+				throwException(null, "Algorithm failed: failed final check.");
+			}
+
+			displayRuntime();
+
+			operationsOnLearnedMA();
+		} else {
+			System.out.println(
+					"The program takes in as input an M2MA, runs set of membership queries, and outputs results with timing");
+//			readInput();
+			readInputFromString(args[1]);
+
+			// refactor to a method!
+			System.out.println("Mod-2-MA:");
+			System.out.println("---------------------");
+
+			System.out.println("Dimension: " + inputSize + '\n');
+
+			System.out.print("Final Vector: ");
+			displayMatrix(inputFinalVector);
+
+			System.out.println("Transition Matrices:\n");
+			for (int i = 0; i < inputTransitionMatrices.length; i++) {
+				System.out.println("Letter " + alphabet[i]);
+				displayMatrix(inputTransitionMatrices[i]);
+			}
+
+			readStringBatch(args[2]);
+			runBatch();
+		}
+	}
+
+	public static void readInputFromString(String filename) throws Exception {
+		System.out.println("Input file name is " + filename + "\n");
 		
-		readInput();
+//		M2MA.startTime = System.nanoTime();
 		
-		minimize();
-				
-		learn();
+		BufferedReader f = new BufferedReader(new FileReader(filename));
+
+		readAlphabet(f, false);
 		
-		if (minSize != learnedSize) {
-			throwException(null, "Algorithm failed: the learned mod-2-MA has a different dimension "
-					+ "(" + learnedSize + ") than the minimized mod-2-MA (" + minSize + ").");
+		inputSize = Integer.parseInt(readFile(f));
+		
+		StringTokenizer st = new StringTokenizer(readFile(f));
+		inputFinalVector = initialize(1, inputSize);
+		for (int i=1; i<=inputSize; i++) {
+			if (Integer.parseInt(st.nextToken()) == 1) {
+				addElement(inputFinalVector, 1, i);
+			}
+		}
+		if (st.hasMoreTokens()) {
+			throwException(f, "Invalid input: final vector length exceeds the specified size.");
+		}
+		
+		inputTransitionMatrices = new HashMap[alphabet.length];
+		for (int i=0; i<alphabet.length; i++) {
+			HashMap<Integer, ArrayList<Integer>> transitionMatrix = initialize(inputSize, inputSize);
+			
+			for (int j=1; j<=inputSize; j++) {
+				st = new StringTokenizer(readFile(f));
+				for (int k=1; k<=inputSize; k++) {
+					if (Integer.parseInt(st.nextToken()) == 1) {
+						addElement(transitionMatrix, j, k);
+					}
+				}
+				if (st.hasMoreTokens()) {
+					throwException(f, "Invalid input: transition matrix size exceeds the specified size.");
+				}
+			}
+			
+			inputTransitionMatrices[i] = transitionMatrix;
+		}
+		if (readFile(f) != null) {
+			throwException(f, "Invalid input: transition matrix size exceeds the specified size.");
+		}
+		
+		f.close();
+	}
+	@SuppressWarnings("unchecked")
+	public static void readStringBatch(String filename) throws Exception {
+//		BufferedReader f;
+//		System.out.println("Enter the input file that contains batch of strings for membership queries");
+//		f = getFile(true, true, false, true);
+		
+		BufferedReader f = new BufferedReader(new FileReader(filename));
+
+		ArrayList<String> batch = new ArrayList<String>();
+
+		String s = readFile(f);
+		while (s != null) {
+			batch.add(s);
+			s = readFile(f);
+		}
+		stringBatch = batch.toArray(new String[0]);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void runBatch() throws Exception {
+
+		for (String s : stringBatch) {
+			if (!inAlphabet(s)) {
+				System.out.println("Inputted word is not in the language, stopped.");
+				return;
+			}
 		}
 
-		if (finalCheck(25, 1000, false)) {
-			displayResults();
-		} else {
-			throwException(null, "Algorithm failed: failed final check.");
+		startTime = System.nanoTime();
+
+		for (String s : stringBatch) {
+			if (MQArbitrary(inputFinalVector, inputTransitionMatrices, s) == 1) {
+				System.out.println("Accepted");
+			} else {
+				System.out.println("Not accepted");
+			}
 		}
-		
-		displayRuntime();
-		
-		operationsOnLearnedMA();
+
+		long endTime = System.nanoTime();
+		double totalTime = (endTime - startTime) / Math.pow(10, 9);
+		// double roundedTime = ((int) (totalTime * 100))/100.0;
+		System.out.println("Ran in " + totalTime + "s.\n");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static void readInput() throws Exception {	
 		BufferedReader f;
@@ -1243,6 +1368,9 @@ public class M2MA {
 		ArrayList<Integer> colSet = null;
 		
 		int rowsTraversed = 0;
+		
+		Set<Integer> arr2KeySet = arr2.keySet();
+		
 		for (int r : arr1.keySet()) {
 			if (rowsTraversed >= arr1.get(0).get(0)) {
 				break;
@@ -1255,7 +1383,8 @@ public class M2MA {
 					colSet = new ArrayList<Integer>();
 					
 					int colsTraversed = 0;
-					for (int c : arr2.keySet()) {
+//					for (int c : arr2.keySet()) {
+					for (int c : arr2KeySet) {
 						if (colsTraversed == arr2.get(0).get(1)) {
 							break;
 						}
@@ -1283,24 +1412,70 @@ public class M2MA {
 	
 	// returns the dot product of two sparse vectors
 	public static int dotProduct(ArrayList<Integer> v1, ArrayList<Integer> v2) {
-		if (v1 == null || v2 == null) {
+		if (v1 == null || v2 == null || v1.size() == 0 || v2.size() == 0) {
 			return 0;
 		}
+//		System.out.println( Arrays.toString( v1.toArray() ) );
+//		System.out.println( Arrays.toString( v2.toArray() ) );
+
+		boolean result = false;
 		
-		HashSet<Integer> set = new HashSet<Integer>();
-		for (int n : v1) {
-			set.add(n);
-		}
+		Iterator<Integer> i1 = v1.iterator();
+		Iterator<Integer> i2 = v2.iterator();
 		
-		int count = 0;
+		int val1 = i1.next();
+		int val2 = i2.next();
 		
-		for (int n : v2) {
-			if (set.contains(n)) {
-				count++;
+		while (true) {
+			if (val1 == val2) {
+				result = !result;
+				if (i1.hasNext()) {
+					val1 = i1.next();
+				}
+				else {
+					break;
+				}
+				if (i2.hasNext()) {
+					val2 = i2.next();
+				}
+				else {
+					break;
+				}
+			}
+			else if (val1 < val2) {
+				if (i1.hasNext()) {
+					val1 = i1.next();
+				}
+				else {
+					break;
+				}
+			}
+			else if (val1 > val2) {
+				if (i2.hasNext()) {
+					val2 = i2.next();
+				}
+				else {
+					break;
+				}
 			}
 		}
 		
-		return count % 2;
+		return result ? 1 : 0;
+		
+//		HashSet<Integer> set = new HashSet<Integer>();
+//		for (int n : v1) {
+//			set.add(n);
+//		}
+//		
+//		int count = 0;
+//		
+//		for (int n : v2) {
+//			if (set.contains(n)) {
+//				count++;
+//			}
+//		}
+//		
+//		return count % 2;
 	}
 	
 	// creates the identity matrix

@@ -1,0 +1,24 @@
+// DBA for f1 i0
+// maximum length of a test in the statistical equivalence query
+20
+// number of tests the statistical equivalence query will check
+10000
+// limit on the number of equivalence queries to run
+500
+// number of states
+3
+// alphabet
+__ _q p_ pq
+// final states
+1
+// number of transitions
+8
+// transitions
+1 __ 1
+1 _q 1
+1 pq 1
+1 p_ 2
+2 __ 2
+2 _q 2
+2 p_ 2
+2 pq 2
